@@ -54,7 +54,7 @@
 
         .page {
             min-height: 100vh;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 60px 20px;
@@ -72,6 +72,7 @@
 
         .page.active {
             opacity: 1;
+            display: flex;
             transform: translateY(0);
             animation: slideIn 0.8s ease-out;
         }
