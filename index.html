@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 50%, #e8f5e8 100%);
+            color: #263238;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(63, 81, 181, 0.3);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(63, 81, 181, 0.2);
+        }
+
+        .nav-dot.active {
+            background: #3f51b5;
+            border-color: #3f51b5;
+            transform: scale(1.4);
+            box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            margin: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: translateY(0);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(63, 81, 181, 0.08) 0%, transparent 70%);
+            animation: shimmer 12s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); opacity: 0.5; }
+            50% { opacity: 0.8; }
+            100% { transform: rotate(360deg); opacity: 0.5; }
+        }
+
+        .page-content {
+            text-align: center;
+            max-width: 800px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: #1a237e;
+            letter-spacing: -1px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.3s forwards;
+        }
+
+        .page-subtitle {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #424242;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.6s forwards;
+        }
+
+        .page-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #37474f;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.9s forwards;
+        }
+
+        .photo-frame {
+            width: 300px;
+            height: 300px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid rgba(63, 81, 181, 0.2);
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #757575;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            opacity: 0;
+            transform: scale(0.8);
+            animation: photoFrameIn 1s ease 1.2s forwards;
+        }
+
+        @keyframes photoFrameIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateY(90deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .photo-frame:hover {
+            transform: scale(1.05) rotateY(5deg);
+            border-color: #3f51b5;
+            box-shadow: 0 16px 48px rgba(63, 81, 181, 0.2);
+        }
+
+        .photo-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(63, 81, 181, 0.15), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .photo-frame:hover::before {
+            left: 100%;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: rgba(233, 30, 99, 0.6);
+            animation: float 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .memory-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(63, 81, 181, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardIn 0.6s ease forwards;
+        }
+
+        .memory-card:nth-child(1) { animation-delay: 0.2s; }
+        .memory-card:nth-child(2) { animation-delay: 0.4s; }
+        .memory-card:nth-child(3) { animation-delay: 0.6s; }
+        .memory-card:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes cardIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .memory-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 16px 32px rgba(63, 81, 181, 0.15);
+        }
+
+        .memory-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .continue-btn {
+            background: linear-gradient(45deg, #3f51b5, #2196f3);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 16px rgba(63, 81, 181, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: btnIn 0.6s ease 1.5s forwards;
+        }
+
+        @keyframes btnIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(63, 81, 181, 0.4);
+        }
+
+        .thank-you-animation {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: sparkleIn 1s ease 0.1s forwards, pulse 2s ease-in-out 1s infinite;
+        }
+
+        @keyframes sparkleIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-180deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .star-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(63, 81, 181, 0.6);
+            border-radius: 50%;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .photo-frame {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .navigation {
+                top: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="star-field" id="starField"></div>
+    
+    <div class="navigation" id="navigation">
+        <div class="nav-dot active" onclick="showPage(0)"></div>
+        <div class="nav-dot" onclick="showPage(1)"></div>
+        <div class="nav-dot" onclick="showPage(2)"></div>
+        <div class="nav-dot" onclick="showPage(3)"></div>
+        <div class="nav-dot" onclick="showPage(4)"></div>
+    </div>
+
+    <div class="container">
+        <!-- Page 1: Welcome -->
+        <div class="page active" id="page0">
+            <div class="floating-hearts" id="hearts0"></div>
+            <div class="page-content">
+                <div class="thank-you-animation">✨</div>
+                <h1 class="page-title">For You</h1>
+                <p class="page-subtitle">A heartfelt journey of gratitude and memories</p>
+                <p class="page-text">Before you go, I wanted to create something special to show how much you mean to me.</p>
+                <button class="continue-btn" onclick="showPage(1)">Begin Journey</button>
+            </div>
+        </div>
+
+        <!-- Page 2: Photo & Introduction -->
+        <div class="page" id="page1">
+            <div class="floating-hearts" id="hearts1"></div>
+            <div class="page-content">
+                <h1 class="page-title">Your Beautiful Spirit</h1>
+                <div class="photo-frame">
+                    <!-- Replace this comment with your photo -->
+                    <!-- <img src="your-photo.jpg" alt="Special Friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;"> -->
+                    <span>Your Photo Here</span>
+                </div>
+                <p class="page-text">This space is waiting for your smile, the one that brightened so many of my days.</p>
+                <button class="continue-btn" onclick="showPage(2)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Page 3: Memories -->
+        <div class="page" id="page2">
+            <div class="floating-hearts" id="hearts2"></div>
+            <div class="page-content">
+                <h1 class="page-title">Treasured Memories</h1>
+                <p class="page-subtitle">Moments that will forever live in my heart</p>
+                <div class="memory-grid">
+                    <div class="memory-card">
+                        <span class="memory-icon">🌟</span>
+                        <h3>Your Laughter</h3>
+                        <p>The way you light up any room with your genuine joy</p>
+                    </div>
+                    <div class="memory-card">
+                        <span class="memory-icon">💭</span>
+                        <h3>Deep Conversations</h3>
+                        <p>Late nights talking about dreams and everything in between</p>
+                    </div>
+                    <div class="memory-card">
+                        <span class="memory-icon">🤝</span>
+                        <h3>Your Support</h3>
+                        <p>Being there when I needed someone the most</p>
+                    </div>
+                    <div class="memory-card">
+                        <span class="memory-icon">✨</span>
+                        <h3>Simple Moments</h3>
+                        <p>The quiet times that meant the world to me</p>
+                    </div>
+                </div>
+                <button class="continue-btn" onclick="showPage(3)">Continue</button>
+            </div>
+        </div>
+
+        <!-- Page 4: Gratitude -->
+        <div class="page" id="page3">
+            <div class="floating-hearts" id="hearts3"></div>
+            <div class="page-content">
+                <h1 class="page-title">Thank You</h1>
+                <p class="page-subtitle">For being exactly who you are</p>
+                <p class="page-text">Thank you for your kindness, your friendship, and for making my world a little brighter. Though distance may separate us, the impact you've had on my life will remain forever.</p>
+                <p class="page-text">You've taught me the true meaning of friendship, and for that, I am eternally grateful.</p>
+                <button class="continue-btn" onclick="showPage(4)">Final Message</button>
+            </div>
+        </div>
+
+        <!-- Page 5: Farewell -->
+        <div class="page" id="page4">
+            <div class="floating-hearts" id="hearts4"></div>
+            <div class="page-content">
+                <h1 class="page-title">Until We Meet Again</h1>
+                <p class="page-subtitle">Distance is just a number when hearts are connected</p>
+                <p class="page-text">Though this feels like goodbye, I know it's really just "see you later." Carry with you the knowledge that you are loved, appreciated, and deeply missed.</p>
+                <p class="page-text">May your new journey be filled with joy, success, and beautiful new memories.</p>
+                <div class="thank-you-animation">💙</div>
+                <p class="page-text">With all my love and best wishes</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const totalPages = 5;
+
+        function showPage(pageIndex) {
+            // Hide current page
+            document.getElementById(`page${currentPage}`).classList.remove('active');
+            document.querySelectorAll('.nav-dot')[currentPage].classList.remove('active');
+
+            // Show new page
+            currentPage = pageIndex;
+            document.getElementById(`page${currentPage}`).classList.add('active');
+            document.querySelectorAll('.nav-dot')[currentPage].classList.add('active');
+        }
+
+        function createStars() {
+            const starField = document.getElementById('starField');
+            const numStars = 100;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starField.appendChild(star);
+            }
+        }
+
+        function createFloatingHearts() {
+            for (let i = 0; i < 5; i++) {
+                const heartsContainer = document.getElementById(`hearts${i}`);
+                if (!heartsContainer) continue;
+                
+                const createHeart = () => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = '💙';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDuration = (Math.random() * 3 + 8) + 's';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        if (heart.parentNode) {
+                            heart.remove();
+                        }
+                    }, 12000);
+                };
+                
+                // Create initial hearts
+                for (let j = 0; j < 3; j++) {
+                    setTimeout(createHeart, j * 1000);
+                }
+                
+                // Continue creating hearts
+                setInterval(createHeart, 3000);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                e.preventDefault();
+                if (currentPage < totalPages - 1) {
+                    showPage(currentPage + 1);
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentPage > 0) {
+                    showPage(currentPage - 1);
+                }
+            }
+        });
+
+        // Touch/swipe support
+        let startX, startY, endX, endY;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].clientX;
+            endY = e.changedTouches[0].clientY;
+            
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 50 && currentPage < totalPages - 1) {
+                    showPage(currentPage + 1);
+                } else if (diffX < -50 && currentPage > 0) {
+                    showPage(currentPage - 1);
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            createFloatingHearts();
+            
+            // Trigger animations for the first page
+            setTimeout(() => {
+                const activePage = document.querySelector('.page.active');
+                if (activePage) {
+                    activePage.style.animation = 'slideIn 0.8s ease-out';
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
